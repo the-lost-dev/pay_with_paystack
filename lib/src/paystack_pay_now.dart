@@ -197,23 +197,11 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
                 )
                 ..loadRequest(Uri.parse(snapshot.data!.authUrl));
               return Scaffold(
-                // appBar: AppBar(
-                //   automaticallyImplyLeading: false,
-                //   //TODO -> Now that the Cancel Payment works, you can remove this cancel icon.
-                //   actions: [
-                //     InkWell(
-                //         onTap: () async {
-                //           await _checkTransactionStatus(
-                //                   snapshot.data!.reference)
-                //               .then((value) {
-                //             Navigator.of(context).pop();
-                //           });
-                //         },
-                //         child: const Icon(Icons.close)),
-                //   ],
-                // ),
-                body: WebViewWidget(
-                  controller: controller,
+                resizeToAvoidBottomInset: true,
+                appBar: const MainAppBar(title: 'Complete Your Payment'),
+                body: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: WebViewWidget(controller: controller),
                 ),
               );
             }
@@ -227,11 +215,64 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
             }
 
             return const Material(
-              child: Center(
-                child: CircularProgressIndicator(),
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: SizedBox(
+                    height: 32,
+                    width: 32,
+                    child: CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF333399),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             );
           }),
     );
   }
+}
+
+class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const MainAppBar({
+    super.key,
+    this.title = '',
+    this.actionWidget,
+    this.hasBackButton = true,
+    this.onBackButtonPressed,
+    this.titleWidget,
+    this.backgroundColor,
+  });
+
+  final String title;
+  final bool hasBackButton;
+  final Widget? actionWidget;
+  final Widget? titleWidget;
+  final Color? backgroundColor;
+  final VoidCallback? onBackButtonPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      titleSpacing: 0,
+      centerTitle: true,
+      backgroundColor: backgroundColor,
+      surfaceTintColor: const Color(0xFFF5F5F5),
+      title: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            const BackButton(),
+            Text(title, style: Theme.of(context).textTheme.labelLarge),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
