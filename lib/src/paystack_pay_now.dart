@@ -219,8 +219,8 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
                 padding: EdgeInsets.all(16.0),
                 child: Center(
                   child: SizedBox(
-                    height: 32,
                     width: 32,
+                    height: 32,
                     child: CircularProgressIndicator.adaptive(
                       valueColor: AlwaysStoppedAnimation<Color>(
                         Color(0xFF333399),
@@ -266,7 +266,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           children: [
             const BackButton(),
-            Text(title, style: Theme.of(context).textTheme.labelLarge),
+            Text(title, style: Theme.of(context).textTheme.displayLarge),
           ],
         ),
       ),
