@@ -130,7 +130,8 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         var snackBar = const SnackBar(
-            content: Text("Fatal error occurred, Please check your internet"));
+          content: Text("Fatal error occurred, Please check your internet"),
+        );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
@@ -146,7 +147,8 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
     } else {
       /// Anything else means there is an issue
       throw Exception(
-          "Response Code: ${response.statusCode}, Response Body${response.body}");
+        "Response Code: ${response.statusCode}, Response Body${response.body}",
+      );
     }
   }
 
@@ -155,85 +157,84 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
     return PopScope(
       canPop: true,
       child: FutureBuilder<PaystackRequestResponse>(
-        future: _makePaymentRequest(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.status == true) {
-            final controller = WebViewController()
-              ..setJavaScriptMode(JavaScriptMode.unrestricted)
-              ..setNavigationDelegate(
-                NavigationDelegate(
-                  onNavigationRequest: (request) async {
-                    final url = request.url;
+          future: _makePaymentRequest(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data!.status == true) {
+              final controller = WebViewController()
+                ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                // ..setUserAgent("Flutter;Webview")
+                ..setNavigationDelegate(
+                  NavigationDelegate(
+                    onNavigationRequest: (request) async {
+                      final url = request.url;
 
-                    switch (url) {
-                      case 'https://your-cancel-url.com':
-                      case 'https://cancelurl.com':
-                      case 'https://standard.paystack.co/close':
-                      case 'https://paystack.co/close':
-                      case 'https://github.com/popekabu/pay_with_paystack':
-                        await _checkTransactionStatus(snapshot.data!.reference)
-                            .then((value) {
-                          Navigator.of(context).pop();
-                        });
-                        break;
-
-                      default:
-                        if (url.contains(widget.callbackUrl)) {
+                      switch (url) {
+                        case 'https://your-cancel-url.com':
+                        case 'https://cancelurl.com':
+                        case 'https://standard.paystack.co/close':
+                        case 'https://paystack.co/close':
+                        case 'https://github.com/popekabu/pay_with_paystack':
                           await _checkTransactionStatus(
                                   snapshot.data!.reference)
                               .then((value) {
                             Navigator.of(context).pop();
                           });
-                        }
-                        break;
-                    }
+                          break;
 
-                    return NavigationDecision.navigate;
-                  },
+                        default:
+                          if (url.contains(widget.callbackUrl)) {
+                            await _checkTransactionStatus(
+                                    snapshot.data!.reference)
+                                .then((value) {
+                              Navigator.of(context).pop();
+                            });
+                          }
+                          break;
+                      }
+
+                      return NavigationDecision.navigate;
+                    },
+                  ),
+                )
+                ..loadRequest(Uri.parse(snapshot.data!.authUrl));
+              return Scaffold(
+                resizeToAvoidBottomInset: true,
+                appBar: const MainAppBar(title: 'Complete Your Payment'),
+                body: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: WebViewWidget(controller: controller),
                 ),
-              )
-              ..loadRequest(Uri.parse(snapshot.data!.authUrl));
-            return Scaffold(
-              resizeToAvoidBottomInset: true,
-              appBar: const MainAppBar(title: 'Complete Your Payment'),
-              body: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: WebViewWidget(controller: controller),
-              ),
-            );
-          }
+              );
+            }
 
-          if (snapshot.hasError) {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            return Scaffold(
-              body: Center(
-                child: Text(
-                  'Paul Selwyn',
-                  style: Theme.of(context).textTheme.displayLarge,
+            if (snapshot.hasError) {
+              return Material(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text('${snapshot.error}'),
+                  ),
                 ),
-              ),
-            );
-          }
+              );
+            }
 
-          return const Material(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(
-                child: SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFF333399),
+            return const Material(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF333399),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
-      ),
+            );
+          }),
     );
   }
 }
