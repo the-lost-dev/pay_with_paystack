@@ -154,7 +154,7 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, // Prevent back gesture
+      canPop: true,
       child: FutureBuilder<PaystackRequestResponse>(
           future: _makePaymentRequest(),
           builder: (context, snapshot) {
