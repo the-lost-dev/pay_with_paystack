@@ -269,7 +269,11 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            const BackButton(),
+            BackButton(
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+            ),
             Text(title, style: Theme.of(context).textTheme.displayLarge),
           ],
         ),
