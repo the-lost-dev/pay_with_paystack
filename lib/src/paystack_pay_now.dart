@@ -136,7 +136,6 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
     }
     if (response!.statusCode == 200) {
       var decodedRespBody = jsonDecode(response.body);
-      // print(decodedRespBody.toString());
       if (decodedRespBody["data"]["status"] == "success") {
         final data = PaymentData.fromJson(decodedRespBody["data"]);
         widget.transactionCompleted(data);
@@ -156,81 +155,86 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
     return PopScope(
       canPop: true,
       child: FutureBuilder<PaystackRequestResponse>(
-          future: _makePaymentRequest(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!.status == true) {
-              final controller = WebViewController()
-                ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                // ..setUserAgent("Flutter;Webview")
-                ..setNavigationDelegate(
-                  NavigationDelegate(
-                    onNavigationRequest: (request) async {
-                      final url = request.url;
+        future: _makePaymentRequest(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data!.status == true) {
+            final controller = WebViewController()
+              ..setJavaScriptMode(JavaScriptMode.unrestricted)
+              // ..setUserAgent("Flutter;Webview")
+              ..setNavigationDelegate(
+                NavigationDelegate(
+                  onNavigationRequest: (request) async {
+                    final url = request.url;
 
-                      switch (url) {
-                        case 'https://your-cancel-url.com':
-                        case 'https://cancelurl.com':
-                        case 'https://standard.paystack.co/close':
-                        case 'https://paystack.co/close':
-                        case 'https://github.com/popekabu/pay_with_paystack':
+                    switch (url) {
+                      case 'https://your-cancel-url.com':
+                      case 'https://cancelurl.com':
+                      case 'https://standard.paystack.co/close':
+                      case 'https://paystack.co/close':
+                      case 'https://github.com/popekabu/pay_with_paystack':
+                        await _checkTransactionStatus(snapshot.data!.reference)
+                            .then((value) {
+                          Navigator.of(context).pop();
+                        });
+                        break;
+
+                      default:
+                        if (url.contains(widget.callbackUrl)) {
                           await _checkTransactionStatus(
                                   snapshot.data!.reference)
                               .then((value) {
                             Navigator.of(context).pop();
                           });
-                          break;
+                        }
+                        break;
+                    }
 
-                        default:
-                          if (url.contains(widget.callbackUrl)) {
-                            await _checkTransactionStatus(
-                                    snapshot.data!.reference)
-                                .then((value) {
-                              Navigator.of(context).pop();
-                            });
-                          }
-                          break;
-                      }
-
-                      return NavigationDecision.navigate;
-                    },
-                  ),
-                )
-                ..loadRequest(Uri.parse(snapshot.data!.authUrl));
-              return Scaffold(
-                resizeToAvoidBottomInset: true,
-                appBar: const MainAppBar(title: 'Complete Your Payment'),
-                body: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: WebViewWidget(controller: controller),
+                    return NavigationDecision.navigate;
+                  },
                 ),
-              );
-            }
+              )
+              ..loadRequest(Uri.parse(snapshot.data!.authUrl));
+            return Scaffold(
+              resizeToAvoidBottomInset: true,
+              appBar: const MainAppBar(title: 'Complete Your Payment'),
+              body: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: WebViewWidget(controller: controller),
+              ),
+            );
+          }
 
-            if (snapshot.hasError) {
-              return Material(
-                child: Center(
-                  child: Text('${snapshot.error}'),
+          if (snapshot.hasError) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            return Scaffold(
+              body: Center(
+                child: Text(
+                  "Error: ${snapshot.error}",
+                  style: const TextStyle(color: Colors.red),
                 ),
-              );
-            }
+              ),
+            );
+          }
 
-            return const Material(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Center(
-                  child: SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: CircularProgressIndicator.adaptive(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Color(0xFF333399),
-                      ),
+          return const Material(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(
+                child: SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: CircularProgressIndicator.adaptive(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xFF333399),
                     ),
                   ),
                 ),
               ),
-            );
-          }),
+            ),
+          );
+        },
+      ),
     );
   }
 }
