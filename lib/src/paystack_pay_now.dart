@@ -160,7 +160,6 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
           if (snapshot.hasData && snapshot.data!.status == true) {
             final controller = WebViewController()
               ..setJavaScriptMode(JavaScriptMode.unrestricted)
-              // ..setUserAgent("Flutter;Webview")
               ..setNavigationDelegate(
                 NavigationDelegate(
                   onNavigationRequest: (request) async {
@@ -210,8 +209,8 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
             return Scaffold(
               body: Center(
                 child: Text(
-                  "Error: ${snapshot.error}",
-                  style: const TextStyle(color: Colors.red),
+                  'Paul Selwyn',
+                  style: Theme.of(context).textTheme.displayLarge,
                 ),
               ),
             );
