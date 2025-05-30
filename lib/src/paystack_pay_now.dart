@@ -94,6 +94,8 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
         }),
       );
     } on Exception catch (e) {
+
+      print('Paul: $e');
       /// In the event of an exception, take the user back and show a SnackBar error.
       if (context.mounted) {
         Navigator.pop(context);
@@ -107,6 +109,7 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
     if (response!.statusCode == 200) {
       return PaystackRequestResponse.fromJson(jsonDecode(response.body));
     } else {
+      print('Paul: ${response.statusCode}, ${response.body}');
       throw Exception(
           "Response Code: ${response.statusCode}, Response Body${response.body}");
     }
