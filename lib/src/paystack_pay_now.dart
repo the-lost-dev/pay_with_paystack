@@ -94,8 +94,6 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
         }),
       );
     } on Exception catch (e) {
-      print('Paul: $e');
-
       /// In the event of an exception, take the user back and show a SnackBar error.
       if (context.mounted) {
         Navigator.pop(context);
@@ -109,9 +107,10 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
     if (response!.statusCode == 200) {
       return PaystackRequestResponse.fromJson(jsonDecode(response.body));
     } else {
-      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.of(context).pop();
       throw Exception(
-          "Response Code: ${response.statusCode}, Response Body${response.body}");
+        "Response Code: ${response.statusCode}, Response Body${response.body}",
+      );
     }
   }
 
@@ -148,7 +147,7 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
             decodedRespBody["data"]["status"].toString());
       }
     } else {
-      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.of(context).pop();
 
       /// Anything else means there is an issue
       throw Exception(
@@ -167,7 +166,6 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
             if (snapshot.hasData && snapshot.data!.status == true) {
               final controller = WebViewController()
                 ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                // ..setUserAgent("Flutter;Webview")
                 ..setNavigationDelegate(
                   NavigationDelegate(
                     onNavigationRequest: (request) async {
