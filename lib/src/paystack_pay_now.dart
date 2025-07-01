@@ -261,11 +261,12 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: false,
       titleSpacing: 0,
       centerTitle: true,
+      automaticallyImplyLeading: false,
       backgroundColor: backgroundColor,
-      surfaceTintColor: const Color(0xFFF5F5F5),
+      surfaceTintColor:Colors.red,
+      //  . const Color(0xFFF5F5F5),
       title: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
