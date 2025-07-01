@@ -107,9 +107,9 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
     if (response!.statusCode == 200) {
       return PaystackRequestResponse.fromJson(jsonDecode(response.body));
     } else {
-      Navigator.of(context).pop();
+      // Navigator.of(context).pop();
       throw Exception(
-        "Response Code: ${response.statusCode}, Response Body${response.body}",
+        "Response Code Selwyn: ${response.statusCode}, Response Body${response.body}",
       );
     }
   }
@@ -147,11 +147,11 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
             decodedRespBody["data"]["status"].toString());
       }
     } else {
-      Navigator.of(context).pop();
+      // Navigator.of(context).pop();
 
       /// Anything else means there is an issue
       throw Exception(
-        "Response Code: ${response.statusCode}, Response Body${response.body}",
+        "Response Code Paul: ${response.statusCode}, Response Body${response.body}",
       );
     }
   }
@@ -214,7 +214,7 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Text('${snapshot.error}'),
+                  child: Text('Selwyn: ${snapshot.error}'),
                 ),
               ),
             );
@@ -276,7 +276,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 30,
                 fontFamily: 'DMSans',
                 fontWeight: FontWeight.w800,
               ),
