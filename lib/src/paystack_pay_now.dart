@@ -148,8 +148,6 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
             decodedRespBody["data"]["status"].toString());
       }
     } else {
-      // Navigator.of(context).pop();
-
       /// Anything else means there is an issue
       throw Exception(
         "Response Code Paul: ${response.statusCode}, Response Body${response.body}",
@@ -178,6 +176,7 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
                       case 'https://github.com/popekabu/pay_with_paystack':
                         await _checkTransactionStatus(snapshot.data!.reference)
                             .then((value) {
+                          Navigator.of(context).pop();
                           Navigator.of(context).pop();
                         });
                         break;
@@ -271,16 +270,16 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            BackButton(
+            IconButton(
+              icon: const Icon(Icons.home_outlined),
               onPressed: () {
-                print('I was called');
                 Navigator.of(context).pop();
               },
             ),
             Text(
               title,
               style: const TextStyle(
-                fontSize: 30,
+                fontSize: 100,
                 fontFamily: 'DMSans',
                 fontWeight: FontWeight.w800,
               ),
