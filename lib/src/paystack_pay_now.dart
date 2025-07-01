@@ -109,7 +109,7 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
     if (response!.statusCode == 200) {
       return PaystackRequestResponse.fromJson(jsonDecode(response.body));
     } else {
-      // Navigator.of(context).pop();
+      Navigator.of(context).pop();
       throw Exception(
         "Response Code Selwyn: ${response.statusCode}, Response Body${response.body}",
       );
@@ -159,85 +159,86 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<PaystackRequestResponse>(
-        future: _makePaymentRequest(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.status == true) {
-            final controller = WebViewController()
-              ..setJavaScriptMode(JavaScriptMode.unrestricted)
-              ..setNavigationDelegate(
-                NavigationDelegate(
-                  onNavigationRequest: (request) async {
-                    final url = request.url;
+      future: _makePaymentRequest(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data!.status == true) {
+          final controller = WebViewController()
+            ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            ..setNavigationDelegate(
+              NavigationDelegate(
+                onNavigationRequest: (request) async {
+                  final url = request.url;
 
-                    switch (url) {
-                      case 'https://your-cancel-url.com':
-                      case 'https://cancelurl.com':
-                      case 'https://standard.paystack.co/close':
-                      case 'https://paystack.co/close':
-                      case 'https://github.com/popekabu/pay_with_paystack':
-                        await _checkTransactionStatus(snapshot.data!.reference)
-                            .then((value) {
-                          Navigator.of(context).pop();
+                  switch (url) {
+                    case 'https://your-cancel-url.com':
+                    case 'https://cancelurl.com':
+                    case 'https://standard.paystack.co/close':
+                    case 'https://paystack.co/close':
+                    case 'https://github.com/popekabu/pay_with_paystack':
+                      await _checkTransactionStatus(snapshot.data!.reference)
+                          .then((value) {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      });
+                      break;
+
+                    default:
+                      if (url.contains(widget.callbackUrl)) {
+                        await _checkTransactionStatus(
+                          snapshot.data!.reference,
+                        ).then((value) {
                           Navigator.of(context).pop();
                         });
-                        break;
+                      }
+                      break;
+                  }
 
-                      default:
-                        if (url.contains(widget.callbackUrl)) {
-                          await _checkTransactionStatus(
-                            snapshot.data!.reference,
-                          ).then((value) {
-                            Navigator.of(context).pop();
-                          });
-                        }
-                        break;
-                    }
-
-                    return NavigationDecision.navigate;
-                  },
-                ),
-              )
-              ..loadRequest(Uri.parse(snapshot.data!.authUrl));
-            return Scaffold(
-              resizeToAvoidBottomInset: true,
-              appBar: const MainAppBar(
-                title: 'Complete Your Payment',
+                  return NavigationDecision.navigate;
+                },
               ),
-              body: Padding(
+            )
+            ..loadRequest(Uri.parse(snapshot.data!.authUrl));
+          return Scaffold(
+            resizeToAvoidBottomInset: true,
+            appBar: const MainAppBar(
+              title: 'Complete Your Payment',
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: WebViewWidget(controller: controller),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Material(
+            child: Center(
+              child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: WebViewWidget(controller: controller),
+                child: Text('${snapshot.error}'),
               ),
-            );
-          }
+            ),
+          );
+        }
 
-          if (snapshot.hasError) {
-            return Material(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text('Selwyn: ${snapshot.error}'),
-                ),
-              ),
-            );
-          }
-
-          return const Material(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(
-                child: SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFF333399),
-                    ),
+        return const Material(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Center(
+              child: SizedBox(
+                width: 32,
+                height: 32,
+                child: CircularProgressIndicator.adaptive(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color(0xFF333399),
                   ),
                 ),
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -266,14 +267,13 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       automaticallyImplyLeading: false,
       backgroundColor: backgroundColor,
-      surfaceTintColor: Colors.red,
-      //  . const Color(0xFFF5F5F5),
+      surfaceTintColor: const Color(0xFFF5F5F5),
       title: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
             IconButton(
-              iconSize: 18,
+              iconSize: 24,
               color: Colors.black,
               icon: Platform.isIOS
                   ? const Icon(Icons.arrow_back_ios_new)
@@ -285,7 +285,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 24,
+                fontSize: 20,
                 fontFamily: 'DMSans',
                 fontWeight: FontWeight.w800,
               ),
