@@ -111,7 +111,7 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
     } else {
       Navigator.of(context).pop();
       throw Exception(
-        "Response Code Selwyn: ${response.statusCode}, Response Body${response.body}",
+        "Response Code: ${response.statusCode}, Response Body${response.body}",
       );
     }
   }
