@@ -285,7 +285,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 100,
+                fontSize: 24,
                 fontFamily: 'DMSans',
                 fontWeight: FontWeight.w800,
               ),
