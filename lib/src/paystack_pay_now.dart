@@ -98,8 +98,9 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        var snackBar =
-            SnackBar(content: Text("Fatal error occurred, ${e.toString()}"));
+        var snackBar = SnackBar(
+          content: Text("Fatal error occurred, ${e.toString()}"),
+        );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
@@ -184,8 +185,8 @@ class _PaystackPayNowState extends State<PaystackPayNow> {
                       default:
                         if (url.contains(widget.callbackUrl)) {
                           await _checkTransactionStatus(
-                                  snapshot.data!.reference)
-                              .then((value) {
+                            snapshot.data!.reference,
+                          ).then((value) {
                             Navigator.of(context).pop();
                           });
                         }
@@ -271,7 +272,10 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           children: [
             BackButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                print('I was called');
+                Navigator.of(context).pop();
+              },
             ),
             Text(
               title,
